@@ -26,11 +26,11 @@ export const createVideo = async (req, res, next) => {
 
 export const getVideos = async (req, res, next) => {
   try {
-    const videos = await Video.find({}, "videoName videoCreator createdAt _id"); // Select specific fields
+    const videos = await Video.find({}, "videoName videoCreator createdAt _id");
 
-    // Format the createdAt date to include only the date part
+  
     const formattedVideos = videos.map(video => ({
-      ...video._doc, // Spread the existing video properties
+      ...video._doc, 
       createdAt: video.createdAt.toISOString().split('T')[0], // Format to YYYY-MM-DD
     }));
 
