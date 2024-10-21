@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const Coachers = new mongoose.Schema(
+const Courts = new mongoose.Schema(
   {
     CourtPhoto: {
       type: String,

@@ -1,5 +1,5 @@
 
-import Courts from '../models/Courts'; 
+import Courts from '../models/Courts.js'; 
 
 
 export const createcourt = async (req, res, next) => {
