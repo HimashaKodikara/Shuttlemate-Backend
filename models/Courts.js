@@ -20,11 +20,11 @@ const Courts = new mongoose.Schema(
     
     Directions: [
       {
-        latitute: {
+        latitude: {
           type: String,
           required: true,
         },
-        lognitude: {
+        longitude: {
           type: String,
           required: true,
         },

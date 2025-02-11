@@ -14,7 +14,7 @@ export const createcourt = async (req, res, next) => {
   
       res.status(201).json({
         success: true,
-        coach,
+        court,
       });
     } catch (error) {
       console.log(error);
