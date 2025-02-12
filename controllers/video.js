@@ -1,4 +1,6 @@
 import Video from "../models/Video.js";
+import AutoIncrementFactory from "mongoose-sequence";
+
 
 export const createVideo = async (req, res, next) => {
   const { imgUrl, videoUrl,videoName,videoCreator } = req.body;

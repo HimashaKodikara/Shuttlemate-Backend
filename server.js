@@ -22,9 +22,6 @@ app.use("/api/videos", videoRoutes);
 app.use("/api/coachers",CoachRoutes);
 app.use("/api/courts",CourtRoutes);
 
-//app.use(errorHandler);
-
-// Listen to the requests
 app.listen(port, () => {
   // connect to DB
   connectDB();

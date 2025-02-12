@@ -1,7 +1,14 @@
 import mongoose from "mongoose";
+import AutoIncrementFactory from "mongoose-sequence";
+
+const connection = mongoose.connection; 
+const AutoIncrement = AutoIncrementFactory(connection); 
 
 const videoSchema = new mongoose.Schema(
   {
+    _vid: {
+      type: Number, 
+    },
     imgUrl: {
       type: String,
       required: true,
@@ -25,4 +32,6 @@ const videoSchema = new mongoose.Schema(
   }
 );
 
+
+videoSchema.plugin(AutoIncrement, { inc_field: "_vid" });
 export default mongoose.model("Video", videoSchema);

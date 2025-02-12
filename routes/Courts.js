@@ -7,7 +7,7 @@ const router = express.Router();
 // http://localhost:5000/api/courts/
 router.post("/", createcourt);
 router.get("/", getCourts);
-router.get("/", getCourts);
-router.get("/", getCourts);
+router.get("/court/:cid", getCourts);
+router.get("/:cid", getCourts);
 
 export default router;

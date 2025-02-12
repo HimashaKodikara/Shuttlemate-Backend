@@ -1,7 +1,14 @@
 import mongoose from "mongoose";
+import AutoIncrementFactory from "mongoose-sequence";
+
+const connection = mongoose.connection; 
+const AutoIncrement = AutoIncrementFactory(connection);
 
 const Courts = new mongoose.Schema(
   {
+    _cid: {
+      type: Number, 
+    },
     CourtPhoto: {
       type: String,
       required: true,
@@ -33,4 +40,5 @@ const Courts = new mongoose.Schema(
   }
 );
 
+Courts.plugin(AutoIncrement, { inc_field: "_cid" });
 export default mongoose.model("Courts", Courts);
