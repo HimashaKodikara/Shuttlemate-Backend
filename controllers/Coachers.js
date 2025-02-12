@@ -28,10 +28,10 @@ export const createcoach = async (req, res, next) => {
     }
   }
   
-
+//get method
   export const getCoachers = async (req, res, next) => {
     try {
-      const coachers = await Coachers.find({}, "CoachName TrainingType Tel ");
+      const coachers = await Coachers.find({}, "CoachPhoto CoachName Tel TrainingType Certifications TrainingAreas ");
   
     
       const formattedCoache = coachers.map(coach => ({
@@ -74,7 +74,7 @@ export const createcoach = async (req, res, next) => {
   const{id} = req.params;
   try{
     const deletecoach = await Coachers.findByIdAndDelete(id);
-    if(!deleteCoach){
+    if(!deletecoach){
       return res.status(404).json({success:false,message:"Coach not found"});
     }
     res.status(200).json({success:true,message:"oach deleted successfultyc"});

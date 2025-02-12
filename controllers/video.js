@@ -4,7 +4,7 @@ export const createVideo = async (req, res, next) => {
   const { imgUrl, videoUrl,videoName,videoCreator } = req.body;
  
   
-
+//create video
   try {
     const video = await Video.create({
       imgUrl,
@@ -24,6 +24,7 @@ export const createVideo = async (req, res, next) => {
   }
 }
 
+//get videos
 export const getVideos = async (req, res, next) => {
   try {
     const videos = await Video.find({}, "videoName videoCreator createdAt _id");
@@ -44,3 +45,45 @@ export const getVideos = async (req, res, next) => {
     next(error);
   }
 };
+
+//delete video
+export const deleteVideo = async(req,res,next) =>{
+  try
+  {
+    const{id} = req.params;
+    const video = await Video.findByIdAndDelete(id);
+
+    if(!video){
+      return res.status(404).json({success:false, message:'Video not found'});
+    }
+    res.status(200).json({success:true , message:"Video deleted successfulty"});
+  }catch(error){
+    console.log("Error deleting video", error);
+    res.status(500).json({success:false, message:"Failed to delete video"});
+    next(error);
+  }
+};
+
+
+//Update video
+export const updateVideo = async (req, res, next) =>{
+  try{
+    const {id} = req.params;
+    const{imgUrl, videoUrl, videoName,videoCreator} = req.body;
+
+    const updateVideo = await Video.findByIdAndUpdate(
+      id,
+      {imgUrl, videoUrl, videoName, videoCreator },
+      {new:true , runValidators:true}
+    );
+
+    if(!updateVideo){
+      return resstatus(404).json({success:false, message:'vidoe not found'})
+    }
+    res.status(200).json({success:false, message,updateVideo});
+  }catch(error){
+    console.error("Error updating video:",error);
+    res.status(500).json({success:false,message:"Failed to update video"});
+    next(error);
+  }
+}

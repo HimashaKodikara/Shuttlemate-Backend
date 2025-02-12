@@ -1,7 +1,14 @@
 import mongoose from "mongoose";
+import AutoIncrementFactory from "mongoose-sequence";
 
-const Coachers = new mongoose.Schema(
+const connection = mongoose.connection; // Get mongoose connection
+const AutoIncrement = AutoIncrementFactory(connection);
+
+const CoachSchema = new mongoose.Schema(
   {
+    _id: {
+      type: Number, 
+    },
     CoachPhoto: {
       type: String,
       required: true,
@@ -30,9 +37,13 @@ const Coachers = new mongoose.Schema(
           type: String,
           required: true,
         },
-      }
+      },
     ],
-  }
+  },
+  { timestamps: true, _id: false } 
 );
 
-export default mongoose.model("Coachers", Coachers);
+
+CoachSchema.plugin(AutoIncrement, { inc_field: "_id" });
+
+export default mongoose.model("Coachers", CoachSchema);
