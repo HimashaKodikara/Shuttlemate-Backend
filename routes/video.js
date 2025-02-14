@@ -6,7 +6,7 @@ const router = express.Router();
 // http://localhost:5000/api/videos/
 router.post("/", createVideo);
 router.get("/", getVideos);
-router.get("/court/:vid", deleteVideo);
-router.get("/:vid", updateVideo);
+router.delete("/court/:id", deleteVideo);
+router.put("/:id", updateVideo);
 
 export default router;

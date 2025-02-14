@@ -26,7 +26,7 @@ export const createcourt = async (req, res, next) => {
 
   export const getCourts = async (req, res, next) => {
     try {
-      const courts = await Courts.find({}, "CourtName Tel place ");
+      const courts = await Courts.find({}, " CourtName Tel place ");
   
     
       const formattedCoache = courts.map(court => ({
@@ -45,22 +45,27 @@ export const createcourt = async (req, res, next) => {
     }
   };
 
-  export const deleteCourt = async (req,res,next) =>{
-    const {id}  = req.params;
+ 
+  
+  export const getCourtById = async (req, res, next) => {
+    const { id } = req.params;
 
-    try{
-      const deleteCourt = await Courts.findByIdAndDelete(id);
-      if(!deleteCourt){
-        return res.status(404).json({success:false,message:'Court not found'});
-      }
-    res.status(200).json({success:false,message:"court deleted succesfully"});
+    try {
+        const court = await Courts.findById(id);
 
-  }catch(error){
-     console.error("Error deleting court",error);
-     res.status(500).json({success:false,message:"Failed to delete court"});
-     next(error);
-  }
-}; 
+        if (!court) {
+            return res.status(404).json({ success: false, message: "Court not found" });
+        }
+
+        res.status(200).json({ success: true, data: court });
+
+    } catch (error) {
+        console.error("Error fetching court:", error);
+        res.status(500).json({ success: false, message: "Failed to fetch court" });
+        next(error);
+    }
+};
+
 
 export const UpdateCourt = async (req, res, next) =>{
   const{id} = req.params;
