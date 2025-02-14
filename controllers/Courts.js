@@ -1,4 +1,4 @@
-
+import mongoose from "mongoose";
 import Courts from '../models/Courts.js'; 
 
 
@@ -45,27 +45,29 @@ export const createcourt = async (req, res, next) => {
     }
   };
 
- 
-  
-  export const getCourtById = async (req, res, next) => {
+
+
+  export const deleteCourt = async (req, res, next) => {
     const { id } = req.params;
 
-    try {
-        const court = await Courts.findById(id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ success: false, message: "Invalid Court ID" });
+    }
 
-        if (!court) {
+    try {
+        const deletedCourt = await Courts.findByIdAndDelete(id);
+        if (!deletedCourt) {
             return res.status(404).json({ success: false, message: "Court not found" });
         }
 
-        res.status(200).json({ success: true, data: court });
+        res.status(200).json({ success: true, message: "Court deleted successfully" });
 
     } catch (error) {
-        console.error("Error fetching court:", error);
-        res.status(500).json({ success: false, message: "Failed to fetch court" });
+        console.error("Error deleting court:", error);
+        res.status(500).json({ success: false, message: "Failed to delete court" });
         next(error);
     }
 };
-
 
 export const UpdateCourt = async (req, res, next) =>{
   const{id} = req.params;

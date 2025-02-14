@@ -7,7 +7,7 @@ const router = express.Router();
 // http://localhost:5000/api/courts/
 router.post("/", createcourt);
 router.get("/", getCourts);
-router.delete("/court/:id", deleteCourt);
+router.delete("/:id",deleteCourt);
 router.put("/:id", getCourts);
 
 export default router;
