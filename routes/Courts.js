@@ -1,6 +1,6 @@
 import express from "express";
 
-import { createcourt, deleteCourt, getCourts } from "../controllers/Courts.js";
+import { createcourt, deleteCourt, getCourts } from "../controllers/CourtsController.js";
 
 const router = express.Router();
 
