@@ -4,7 +4,8 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 import videoRoutes from "./routes/video.js";
 import CoachRoutes from "./routes/Coachers.js"
-import CourtRoutes from "./routes/Courts.js"
+import CourtRoutes from "./routes/Courts.js";
+import ShopRoutes from "./routes/shops.js";
 //import { errorHandler } from "./middlewares/error.js";
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use("/api/videos", videoRoutes);
 app.use("/api/coachers",CoachRoutes);
 app.use("/api/courts",CourtRoutes);
+app.use("/api/shops",ShopRoutes);
 
 app.listen(port, () => {
   // connect to DB
