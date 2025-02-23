@@ -1,27 +1,35 @@
 import mongoose from "mongoose";
-import AutoIncrementFactory from "mongoose-sequence";
-//const AutoIncrement = AutoIncrementFactory(connection);
-
-//const connection = mongoose.connection;
 
 const ItemSchema = new mongoose.Schema({
-    itemphoto: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    color: {
-      type: String,
-    },
-  });
-  
+  itemphoto: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  color: {
+    type: String,
+  },
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
+});
+
+const CategorySchema = new mongoose.Schema({
+  categoryName: {
+    type: String,
+    required: true,
+  },
+});
+
 const ShopSchema = new mongoose.Schema(
   {
     ShopPhoto: {
@@ -40,16 +48,13 @@ const ShopSchema = new mongoose.Schema(
       required: true,
     },
     website: {
-        type: String,
-        required: true,
-      },
-    
-    // Embed an array of items in each shop document
-    items: [ItemSchema],
+      type: String,
+      required: true,
+    },
+    categories: [CategorySchema], // Categories inside shop
+    items: [ItemSchema], // Items assigned to categories via categoryId
   },
-  { timestamps: true, } 
+  { timestamps: true }
 );
-
-
 
 export default mongoose.model("shops", ShopSchema);

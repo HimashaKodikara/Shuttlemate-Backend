@@ -1,8 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import Shop from "../models/shop.js"; // Ensure this points to the correct Shop model file
-
-
+import Shop from "../models/shop.js";
 
 // Create a new shop
 export const createShop = async (req, res, next) => {
@@ -19,8 +17,15 @@ export const createShop = async (req, res, next) => {
 // Get all shops
 export const getAllShops = async (req, res, next) => {
   try {
-    const shops = await Shop.find({}, "ShopName Tel place");
-    res.status(200).json({ success: true, shops });
+    const shops = await Shop.find({}, "ShopName Tel place website ShopPhoto categories items _id");
+    
+    const transformedShops = shops.map(shop => ({
+      ...shop.toObject(),
+      itemsCount: shop.items.length,
+      categoriesCount: shop.categories.length,
+    }));
+
+    res.status(200).json({ success: true, shops: transformedShops });
   } catch (error) {
     console.error("Error fetching shops:", error);
     res.status(500).json({ success: false, message: "Failed to fetch shops" });
@@ -67,13 +72,71 @@ export const deleteShop = async (req, res, next) => {
   }
 };
 
-// Add an item to a shop
-export const addItemToShop = async (req, res, next) => {
+// Add a category to a shop
+export const addCategoryToShop = async (req, res, next) => {
   try {
     const shop = await Shop.findById(req.params.id);
     if (!shop) return res.status(404).json({ success: false, message: "Shop not found" });
-    shop.items.push(req.body);
+    shop.categories.push(req.body);
     await shop.save();
+    res.status(201).json({ success: true, shop });
+  } catch (error) {
+    console.error("Error adding category:", error);
+    res.status(500).json({ success: false, message: "Failed to add category" });
+    next(error);
+  }
+};
+
+// // Add an item to a category in a shop
+// export const addItemToCategory = async (req, res, next) => {
+//   try {
+//     const { name, price, color, itemphoto, categoryId } = req.body;
+//     const shop = await Shop.findById(req.params.id);
+//     if (!shop) return res.status(404).json({ success: false, message: "Shop not found" });
+
+//     const categoryExists = shop.categories.some(category => category._id.toString() === categoryId);
+//     if (!categoryExists) return res.status(404).json({ success: false, message: "Category not found" });
+
+//     const newItem = { name, price, color, itemphoto, categoryId };
+//     shop.items.push(newItem);
+//     await shop.save();
+//     res.status(201).json({ success: true, shop });
+//   } catch (error) {
+//     console.error("Error adding item:", error);
+//     res.status(500).json({ success: false, message: "Failed to add item" });
+//     next(error);
+//   }
+// };
+
+
+
+export const addItemToCategory = async (req, res, next) => {
+  try {
+    const { name, price, color, itemphoto, categoryId } = req.body;
+
+    // Find the shop
+    const shop = await Shop.findById(req.params.id);
+    if (!shop) {
+      return res.status(404).json({ success: false, message: "Shop not found" });
+    }
+
+    // Convert categoryId to ObjectId if it's a string
+    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+      return res.status(400).json({ success: false, message: "Invalid category ID" });
+    }
+    const categoryObjectId = new mongoose.Types.ObjectId(categoryId);
+
+    // Check if category exists in shop
+    const categoryExists = shop.categories.some(category => category._id.equals(categoryObjectId));
+    if (!categoryExists) {
+      return res.status(404).json({ success: false, message: "Category not found" });
+    }
+
+    // Create and add new item
+    const newItem = { name, price, color, itemphoto, categoryId };
+    shop.items.push(newItem);
+    await shop.save();
+
     res.status(201).json({ success: true, shop });
   } catch (error) {
     console.error("Error adding item:", error);
@@ -81,6 +144,7 @@ export const addItemToShop = async (req, res, next) => {
     next(error);
   }
 };
+
 
 // Remove an item from a shop
 export const removeItemFromShop = async (req, res, next) => {
