@@ -29,7 +29,7 @@ export const createVideo = async (req, res, next) => {
 //get videos
 export const getVideos = async (req, res, next) => {
   try {
-    const videos = await Video.find({}, "videoName videoCreator createdAt _id");
+    const videos = await Video.find({}, "imgUrl videoName videoCreator createdAt _id");
 
   
     const formattedVideos = videos.map(video => ({
