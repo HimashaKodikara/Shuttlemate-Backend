@@ -6,6 +6,7 @@ import videoRoutes from "./routes/video.js";
 import CoachRoutes from "./routes/Coachers.js"
 import CourtRoutes from "./routes/Courts.js";
 import ShopRoutes from "./routes/shops.js";
+import itemRoutes from "./routes/Item.js"
 //import { errorHandler } from "./middlewares/error.js";
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use("/api/videos", videoRoutes);
 app.use("/api/coachers",CoachRoutes);
 app.use("/api/courts",CourtRoutes);
 app.use("/api/shops",ShopRoutes);
+app.use("/api/items", itemRoutes);
 
 app.listen(port, () => {
   // connect to DB

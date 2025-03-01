@@ -3,8 +3,8 @@ import express from "express";
 import { createcourt, deleteCourt, getCourts } from "../controllers/CourtsController.js";
 
 const router = express.Router();
-
-// http://localhost:5000/api/courts/
+http://localhost:5000/api/courts/
+// 
 router.post("/", createcourt);
 router.get("/", getCourts);
 router.delete("/:id",deleteCourt);

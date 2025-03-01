@@ -30,4 +30,5 @@ router.post("/shop/:id/categories/:categoryId/items", addItemToCategory);
 //http://localhost:5000/api/shops/67b9fde6db167a4d865c7b4b/items/67b9fde6db167a4d865c7b4e
 router.delete("/:id/items/:itemId", removeItemFromShop);
 
+
 export default router;

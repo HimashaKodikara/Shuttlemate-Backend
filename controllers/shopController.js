@@ -14,6 +14,8 @@ export const createShop = async (req, res, next) => {
   }
 };
 
+
+
 // Get all shops
 export const getAllShops = async (req, res, next) => {
   try {
@@ -160,3 +162,5 @@ export const removeItemFromShop = async (req, res, next) => {
     next(error);
   }
 };
+
+
