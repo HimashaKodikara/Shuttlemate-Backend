@@ -6,9 +6,6 @@ const AutoIncrement = AutoIncrementFactory(connection);
 
 const CoachSchema = new mongoose.Schema(
   {
-    _id: {
-      type: Number, 
-    },
     CoachPhoto: {
       type: String,
       required: true,
@@ -40,10 +37,10 @@ const CoachSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true, _id: false } 
+  { timestamps: true } 
 );
 
 
-CoachSchema.plugin(AutoIncrement, { inc_field: "_id" });
+
 
 export default mongoose.model("Coachers", CoachSchema);

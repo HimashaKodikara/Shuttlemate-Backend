@@ -6,7 +6,7 @@ import videoRoutes from "./routes/video.js";
 import CoachRoutes from "./routes/Coachers.js"
 import CourtRoutes from "./routes/Courts.js";
 import ShopRoutes from "./routes/shops.js";
-import itemRoutes from "./routes/Item.js"
+import itemRoutes from "./routes/Item.js";
 //import { errorHandler } from "./middlewares/error.js";
 
 dotenv.config();

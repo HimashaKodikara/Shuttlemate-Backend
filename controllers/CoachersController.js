@@ -72,13 +72,20 @@ export const updateCoach = async (req, res, next) => {
 
 //Delete coach
 export const deleteCoach = async (req, res, next) => {
-  const {id} = req.params;
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid Coach ID format" });
+  }
+
   try {
-    const deletecoach = await Coachers.findByIdAndDelete(id);
+    const deletecoach = await Coachers.findByIdAndDelete(new mongoose.Types.ObjectId(id));
+
     if (!deletecoach) {
       return res.status(404).json({ success: false, message: "Coach not found" });
     }
-    res.status(200).json({ success: true, message: "Coach deleted successfulty" });
+
+    res.status(200).json({ success: true, message: "Coach deleted successfully" });
   } catch (error) {
     console.error("Error deleting coach:", error);
     res.status(500).json({ success: false, message: "Failed to delete coach" });
