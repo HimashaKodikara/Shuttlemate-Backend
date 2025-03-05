@@ -26,7 +26,7 @@ export const createcourt = async (req, res, next) => {
 
   export const getCourts = async (req, res, next) => {
     try {
-      const courts = await Courts.find({}, " CourtName Tel place ");
+      const courts = await Courts.find({}, "CourtPhoto CourtName Tel place ");
   
     
       const formattedCoache = courts.map(court => ({
