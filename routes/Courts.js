@@ -1,6 +1,6 @@
 import express from "express";
 
-import { createcourt, deleteCourt, getCourts } from "../controllers/CourtsController.js";
+import { createcourt, deleteCourt, getCourts,UpdateCourt } from "../controllers/CourtsController.js";
 
 const router = express.Router();
 
@@ -8,6 +8,6 @@ const router = express.Router();
 router.post("/", createcourt);
 router.get("/", getCourts);
 router.delete("/:id",deleteCourt);
-router.put("/:id", getCourts);
+router.put("/court/:id", UpdateCourt);
 
 export default router;

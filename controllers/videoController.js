@@ -67,25 +67,44 @@ export const deleteVideo = async(req,res,next) =>{
 };
 
 
-//Update video
-export const updateVideo = async (req, res, next) =>{
-  try{
-    const {id} = req.params;
-    const{imgUrl, videoUrl, videoName,videoCreator} = req.body;
+// //Update video
+// export const updateVideo = async (req, res, next) =>{
+//   try{
+//     const {id} = req.params;
+//     const{imgUrl, videoUrl, videoName,videoCreator} = req.body;
 
-    const updateVideo = await Video.findByIdAndUpdate(
-      id,
-      {imgUrl, videoUrl, videoName, videoCreator },
-      {new:true , runValidators:true}
-    );
+//     const updateVideo = await Video.findByIdAndUpdate(
+//       id,
+//       {imgUrl, videoUrl, videoName, videoCreator },
+//       {new:true , runValidators:true}
+//     );
 
-    if(!updateVideo){
-      return resstatus(404).json({success:false, message:'vidoe not found'})
+//     if(!updateVideo){
+//       return resstatus(404).json({success:false, message:'vidoe not found'})
+//     }
+//     res.status(200).json({success:false, message,updateVideo});
+//   }catch(error){
+//     console.error("Error updating video:",error);
+//     res.status(500).json({success:false,message:"Failed to update video"});
+//     next(error);
+//   }
+// }
+
+
+//Update Coach
+export const updateVideo = async (req, res, next) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    const updateVideo = await Video.findByIdAndUpdate(id, updateData, { new: true });
+    if (!updateVideo) {
+      return res.status(404).json({ success: false, message: "video not found" });
     }
-    res.status(200).json({success:false, message,updateVideo});
-  }catch(error){
-    console.error("Error updating video:",error);
-    res.status(500).json({success:false,message:"Failed to update video"});
+    res.status(200).json({ success: true, video: updateVideo });
+  } catch (error) {
+    console.error("Error updating coach :", error);
+    res.status(500).json({ success: false, message: "Failed to update vidoe" });
     next(error);
   }
 }

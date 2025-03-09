@@ -69,25 +69,43 @@ export const createcourt = async (req, res, next) => {
     }
 };
 
-export const UpdateCourt = async (req, res, next) =>{
-  const{id} = req.params;
+// export const UpdateCourt = async (req, res, next) =>{
+//   const{id} = req.params;
 
-  const{CourtPhoto,CourtName,Tel,place,Directions} = req.body;
+//   const{CourtPhoto,CourtName,Tel,place,Directions} = req.body;
 
-  try{
-    const updateCourt = await Courts.findByIdAndUpdate(
-      id,
-      {CourtPhoto,CourtName,Tel,place, Directions},
-      {new:true, runValidators:true}
-    );
-    if(!updateCourt){
-      return res.status(404).json({success:false,message:'Court not found'});
+//   try{
+//     const updateCourt = await Courts.findByIdAndUpdate(
+//       id,
+//       {CourtPhoto,CourtName,Tel,place, Directions},
+//       {new:true, runValidators:true}
+//     );
+//     if(!updateCourt){
+//       return res.status(404).json({success:false,message:'Court not found'});
+//     }
+//     res.status(200).json({success:true,court:updateCourt});
+//   }
+//   catch(error){
+//     console.error("Error updating court",error);
+//     res.status(500).json({success:false,message:"Failed to update court!"});
+//     next(error);
+//   }
+// }
+
+//Update Coach
+export const UpdateCourt = async (req, res, next) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    const updateCourt = await Courts.findByIdAndUpdate(id, updateData, { new: true });
+    if (!updateCourt) {
+      return res.status(404).json({ success: false, message: "court not found" });
     }
-    res.status(200).json({success:true,court:updateCourt});
-  }
-  catch(error){
-    console.error("Error updating court",error);
-    res.status(500).json({success:false,message:"Failed to update court!"});
+    res.status(200).json({ success: true, court: updateCourt });
+  } catch (error) {
+    console.error("Error updating court :", error);
+    res.status(500).json({ success: false, message: "Failed to update court" });
     next(error);
   }
 }

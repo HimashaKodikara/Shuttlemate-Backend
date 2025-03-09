@@ -7,6 +7,6 @@ const router = express.Router();
 router.post("/", createVideo);
 router.get("/", getVideos);
 router.delete("/:id", deleteVideo);
-router.put("/:id", updateVideo);
+router.put("/video/:id", updateVideo);
 
 export default router;
