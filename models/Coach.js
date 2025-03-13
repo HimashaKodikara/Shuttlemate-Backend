@@ -18,7 +18,7 @@ const CoachSchema = new mongoose.Schema(
       type: String,
     },
     TrainingType: {
-      type: String,
+      type: [String],
       required: true,
     },
     Certifications: {

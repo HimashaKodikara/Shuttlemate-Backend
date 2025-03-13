@@ -67,29 +67,6 @@ export const deleteVideo = async(req,res,next) =>{
 };
 
 
-// //Update video
-// export const updateVideo = async (req, res, next) =>{
-//   try{
-//     const {id} = req.params;
-//     const{imgUrl, videoUrl, videoName,videoCreator} = req.body;
-
-//     const updateVideo = await Video.findByIdAndUpdate(
-//       id,
-//       {imgUrl, videoUrl, videoName, videoCreator },
-//       {new:true , runValidators:true}
-//     );
-
-//     if(!updateVideo){
-//       return resstatus(404).json({success:false, message:'vidoe not found'})
-//     }
-//     res.status(200).json({success:false, message,updateVideo});
-//   }catch(error){
-//     console.error("Error updating video:",error);
-//     res.status(500).json({success:false,message:"Failed to update video"});
-//     next(error);
-//   }
-// }
-
 
 //Update Coach
 export const updateVideo = async (req, res, next) => {

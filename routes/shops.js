@@ -17,7 +17,7 @@ const router = express.Router();
 router.post("/", createShop);
 router.get("/", getAllShops);
 router.get("/shop/:id", getShopById);
-router.put("/:id", updateShop);
+router.put("/shop/:id", updateShop);
 router.delete("/shop/:id", deleteShop);
 
 // Category routes within a shop
