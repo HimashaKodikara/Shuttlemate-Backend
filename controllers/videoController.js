@@ -29,11 +29,11 @@ export const createVideo = async (req, res, next) => {
 //get videos
 export const getVideos = async (req, res, next) => {
   try {
-    const videos = await Video.find({}, "imgUrl videoName videoCreator createdAt _id");
+    // Remove the field projection to get all data
+    const videos = await Video.find();
 
-  
     const formattedVideos = videos.map(video => ({
-      ...video._doc, 
+      ...video._doc,
       createdAt: video.createdAt.toISOString().split('T')[0], // Format to YYYY-MM-DD
     }));
 
@@ -47,6 +47,7 @@ export const getVideos = async (req, res, next) => {
     next(error);
   }
 };
+
 
 //delete video
 export const deleteVideo = async(req,res,next) =>{
