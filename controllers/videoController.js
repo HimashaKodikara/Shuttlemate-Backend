@@ -3,7 +3,7 @@ import AutoIncrementFactory from "mongoose-sequence";
 
 
 export const createVideo = async (req, res, next) => {
-  const { imgUrl, videoUrl,videoName,videoCreator } = req.body;
+  const { imgUrl, videoUrl,videoName,videoCreator,videoCreatorPhoto } = req.body;
  
   
 //create video
@@ -12,7 +12,8 @@ export const createVideo = async (req, res, next) => {
       imgUrl,
       videoUrl,
       videoName,
-      videoCreator
+      videoCreator,
+      videoCreatorPhoto
     });
 
     res.status(201).json({

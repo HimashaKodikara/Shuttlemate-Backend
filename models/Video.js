@@ -25,7 +25,10 @@ const videoSchema = new mongoose.Schema(
       type: String,
       required:true,
     }
-
+   ,videoCreatorPhoto :{
+    type: String,
+    required:true,
+  }
   },
   {
     timestamps: true,
