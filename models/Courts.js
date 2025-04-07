@@ -21,6 +21,14 @@ const CourtsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    Priceperhour:{
+      type: Number,
+      required: true,
+    },
+    Openinghours:{
+      type : String,
+      required: true,
+    },
     Directions: [
       {
         latitude: {

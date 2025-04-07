@@ -3,13 +3,13 @@ import Courts from '../models/Courts.js';
 
 
 export const createcourt = async (req, res, next) => {
-    const { CourtPhoto,CourtName,Tel,place,Directions} = req.body;
+    const { CourtPhoto,CourtName,Tel,place,Directions,Priceperhour, Openinghours} = req.body;
    
     
   
     try {
       const court = await Courts.create({
-        CourtPhoto,CourtName,Tel,place,Directions
+        CourtPhoto,CourtName,Tel,place,Directions,Priceperhour, Openinghours
       });
   
       res.status(201).json({
@@ -26,7 +26,8 @@ export const createcourt = async (req, res, next) => {
 
   export const getCourts = async (req, res, next) => {
     try {
-      const courts = await Courts.find({}, "CourtPhoto CourtName Tel place ");
+      const courts = await Courts.find();
+
   
     
       const formattedCoache = courts.map(court => ({
