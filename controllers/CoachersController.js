@@ -4,7 +4,7 @@ import Coachers from '../models/Coach.js';
 
 
 export const createcoach = async (req, res, next) => {
-  const { CoachPhoto, CoachName, Tel, TrainingType, Certifications, TrainingAreas } = req.body;
+  const { CoachPhoto, CoachName, Tel, TrainingType, Certifications, TrainingAreas,Experiance } = req.body;
 
 
 
@@ -15,7 +15,8 @@ export const createcoach = async (req, res, next) => {
       Tel,
       TrainingType,
       Certifications,
-      TrainingAreas
+      TrainingAreas,
+      Experiance
     });
 
     res.status(201).json({
@@ -32,7 +33,7 @@ export const createcoach = async (req, res, next) => {
 //get method
 export const getCoachers = async (req, res, next) => {
   try {
-    const coachers = await Coachers.find({}, "CoachPhoto CoachName Tel TrainingType Certifications TrainingAreas ");
+    const coachers = await Coachers.find();
 
 
     const formattedCoache = coachers.map(coach => ({
