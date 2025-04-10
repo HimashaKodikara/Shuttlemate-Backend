@@ -27,17 +27,12 @@ const CoachSchema = new mongoose.Schema(
     Experiance:{
       type:Number,
     },
-    TrainingAreas: [
+    Courts: [
       {
-        CourtName: {
-          type: String,
-          required: true,
-        },
-        Area: {
-          type: String,
-          required: true,
-        },
-      },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Courts", 
+        required: true,
+      }
     ],
   },
   { timestamps: true } 
