@@ -24,6 +24,9 @@ const CoachSchema = new mongoose.Schema(
     Certifications: {
       type: String,
     },
+    Experiance:{
+      type:Number,
+    },
     TrainingAreas: [
       {
         CourtName: {
