@@ -19,7 +19,7 @@ export const createShop = async (req, res, next) => {
 // Get all shops
 export const getAllShops = async (req, res, next) => {
   try {
-    const shops = await Shop.find({}, "ShopName Tel place website ShopPhoto categories items _id");
+    const shops = await Shop.find();
     
     const transformedShops = shops.map(shop => ({
       ...shop.toObject(),

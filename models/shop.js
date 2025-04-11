@@ -51,6 +51,14 @@ const ShopSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    brands:
+      [
+        {
+          name: { type: String, required: true },
+          images: { type: String, required: true },
+        },
+      ],
+    
     categories: [CategorySchema], // Categories inside shop
     items: [ItemSchema], // Items assigned to categories via categoryId
   },
