@@ -28,6 +28,9 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  priceRange:{
+    type: String,
+  }
 });
 
 const ShopSchema = new mongoose.Schema(
