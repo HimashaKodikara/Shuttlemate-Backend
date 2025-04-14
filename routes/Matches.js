@@ -8,6 +8,6 @@ const router = express.Router();
 router.post("/", createMatch);
 router.get("/", getAllMatches);
 router.delete("/:id",deleteMatch);
-router.put("/court/:id", updateMatch);
+router.put("/match/:id", updateMatch);
 
 export default router;
