@@ -3,7 +3,7 @@ const router = express.Router();
 import Stripe from 'stripe';
 import Payment from '../models/Payment.js';
 
-//const stripe = new Stripe('sk_test_51QJef7RwP0CS6vlp1xPmO3Nre0XQtp4VMvgKfYvMWeipbCfvV38ECuNVUOTiOHPikUYDhFSWh1gkhhlYE8LfLUEN00x5umMnMs');
+const stripe = new Stripe('sk_test_51QJef7RwP0CS6vlp1xPmO3Nre0XQtp4VMvgKfYvMWeipbCfvV38ECuNVUOTiOHPikUYDhFSWh1gkhhlYE8LfLUEN00x5umMnMs');
 
 router.post('/create-payment-intent', async (req, res) => {
   try {
