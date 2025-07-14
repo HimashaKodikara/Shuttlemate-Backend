@@ -11,7 +11,7 @@ export const getCoachBookings = async (req, res) => {
     const coach = await Coach.findById(coachId)
       .populate({
         path: 'bookings.userId',
-        select: 'name email phone profilePhoto ' // Adjust based on your User model
+        select: 'name email phoneNumber profilePhoto ' // Adjust based on your User model
       });
     
     if (!coach) {
