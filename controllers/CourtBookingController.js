@@ -1,6 +1,8 @@
 import Court from '../models/Courts.js';
 import { CourtBooking } from '../models/Courts.js';
 import mongoose from 'mongoose';
+import { getRegisteredTokens } from './notificationController.js';
+import admin from '../firebase/firebaseAdmin.js';
 
 // Get all bookings for a court
 export const getCourtBookings = async (req, res) => {
@@ -11,7 +13,7 @@ export const getCourtBookings = async (req, res) => {
     const court = await Court.findById(courtId)
       .populate({
         path: 'bookings.userId',
-        select: 'name email phoneNumber profilePhoto ' // Adjust based on your User model
+        select: 'name email phoneNumber profilePhoto ' 
       });
 
     if (!court) {
@@ -74,7 +76,7 @@ export const getBooking = async (req, res) => {
     const court = await Court.findById(courtId)
       .populate({
         path: 'bookings.userId',
-        select: 'name email phone profilePhoto' // Adjust based on your User model
+        select: 'name email phone profilePhoto'  
       });
 
     if (!court) {
@@ -156,12 +158,10 @@ export const createBooking = async (req, res) => {
 
     // Check for conflicting bookings
     const conflictingBookings = court.bookings.filter(booking => {
-      // Convert booking date to YYYY-MM-DD format for comparison
       const existingBookingDate = new Date(booking.date);
       const existingDateStr = existingBookingDate.toISOString().split('T')[0];
       const newDateStr = bookingDate.toISOString().split('T')[0];
 
-      // Check if booking is on the same day and has overlapping time
       return existingDateStr === newDateStr &&
         booking.status !== 'cancelled' &&
         ((booking.startTime <= startTime && booking.endTime > startTime) ||
@@ -213,55 +213,13 @@ export const createBooking = async (req, res) => {
   }
 };
 
-// Update a booking status
-// export const updateBookingStatus = async (req, res) => {
-//   try {
-//     const { courtId, bookingId } = req.params;
-//     const { status } = req.body;
 
-//     // Validate status
-//     const validStatuses = ['pending', 'confirmed', 'cancelled', 'completed'];
-//     if (!validStatuses.includes(status)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: `Status must be one of: ${validStatuses.join(', ')}`,
-//       });
-//     }
-
-//     const court = await Court.findById(courtId);
-//     if (!court) {
-//       return res.status(404).json({ success: false, message: 'Court not found' });
-//     }
-
-//     const bookingIndex = court.bookings.findIndex(b => b._id.toString() === bookingId);
-
-//     if (bookingIndex === -1) {
-//       return res.status(404).json({ success: false, message: 'Booking not found' });
-//     }
-
-//     court.bookings[bookingIndex].status = status;
-//     await court.save();
-
-//     res.status(200).json({
-//       success: true,
-//       message: 'Booking status updated successfully',
-//       data: court.bookings[bookingIndex],
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: 'Error updating booking status',
-//       error: error.message,
-//     });
-//   }
-// };
 
 export const updateBookingStatus = async (req, res) => {
   try {
     const { courtId, bookingId } = req.params;
     const { status } = req.body;
-    
-    // Validate status
+
     const validStatuses = ['pending', 'confirmed', 'cancelled', 'completed'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -269,53 +227,89 @@ export const updateBookingStatus = async (req, res) => {
         message: `Status must be one of: ${validStatuses.join(', ')}`,
       });
     }
-    
+
     const court = await Court.findById(courtId);
     if (!court) {
       return res.status(404).json({ success: false, message: 'Court not found' });
     }
-    
+
     const bookingIndex = court.bookings.findIndex(b => b._id.toString() === bookingId);
-    
     if (bookingIndex === -1) {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
-    
+
     const booking = court.bookings[bookingIndex];
     const previousStatus = booking.status;
-    
+
     // Update booking status
     court.bookings[bookingIndex].status = status;
-    
-    // If status is being changed to 'completed', remove corresponding availability slot
-    if (status === 'completed' && previousStatus !== 'completed' || status === 'cancelled') {
+
+    if ((status === 'completed' && previousStatus !== 'completed') || status === 'cancelled') {
       const bookingDate = new Date(booking.date);
-      const dayOfWeek = bookingDate.getDay(); 
-      
-      // Find and remove the matching availability slot
-      const availabilityIndex = court.availability.findIndex(slot => 
+      const dayOfWeek = bookingDate.getDay();
+
+      const availabilityIndex = court.availability.findIndex(slot =>
         slot.dayOfWeek === dayOfWeek &&
         slot.startTime === booking.startTime &&
         slot.endTime === booking.endTime
       );
-      
+
       if (availabilityIndex !== -1) {
         court.availability.splice(availabilityIndex, 1);
       } else {
         console.log('No matching availability slot found to remove');
       }
     }
-    
+
     await court.save();
-    
+
+   
+    const tokens = getRegisteredTokens();
+    if (tokens && tokens.length > 0) {
+      const message = {
+        notification: {
+          title: 'Booking Status Updated',
+          body: `Your booking is now ${status}.`,
+        },
+        data: {
+          screen: 'booking',
+          bookingId: booking._id.toString(),
+          courtId: court._id.toString(),
+          type: 'booking_status_update',
+        },
+      };
+
+      const notifications = tokens.map(async (token) => {
+        try {
+          return await admin.messaging().send({
+            ...message,
+            token,
+          });
+        } catch (error) {
+          console.error(`Failed to send notification to token ${token}:`, error);
+          return null;
+        }
+      });
+
+      const results = await Promise.allSettled(notifications);
+      const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
+      const failed = results.length - successful;
+      console.log(`Push Notifications: ${successful} sent, ${failed} failed`);
+    } else {
+      console.log('No registered tokens found for notifications');
+    }
+  
+
     res.status(200).json({
       success: true,
-      message: status === 'completed' ? 
-        'Booking marked as completed and availability slot removed' : 
-        'Booking status updated successfully',
+      message: status === 'completed'
+        ? 'Booking marked as completed and availability slot removed'
+        : 'Booking status updated successfully',
       data: court.bookings[bookingIndex],
     });
+
   } catch (error) {
+    console.error("Error updating booking status:", error);
     res.status(500).json({
       success: false,
       message: 'Error updating booking status',
