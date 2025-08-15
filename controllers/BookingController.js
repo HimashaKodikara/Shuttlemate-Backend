@@ -1,6 +1,8 @@
 import Coach from '../models/Coach.js';
 import { Booking } from '../models/Coach.js';
 import mongoose from 'mongoose';
+import { getRegisteredTokens } from './notificationController.js';
+import admin from '../firebase/firebaseAdmin.js';
 
 // Get all bookings for a coach
 export const getCoachBookings = async (req, res) => {
@@ -216,8 +218,7 @@ export const updateBookingStatus = async (req, res) => {
   try {
     const { coachId, bookingId } = req.params;
     const { status } = req.body;
-    
-    // Validate status
+
     const validStatuses = ['pending', 'confirmed', 'cancelled', 'completed'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -225,27 +226,69 @@ export const updateBookingStatus = async (req, res) => {
         message: `Status must be one of: ${validStatuses.join(', ')}`,
       });
     }
-    
+
     const coach = await Coach.findById(coachId);
     if (!coach) {
       return res.status(404).json({ success: false, message: 'Coach not found' });
     }
-    
+
     const bookingIndex = coach.bookings.findIndex(b => b._id.toString() === bookingId);
-    
+
     if (bookingIndex === -1) {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
-    
+
+    // Update booking status
     coach.bookings[bookingIndex].status = status;
     await coach.save();
-    
+
+    // ---- Push Notification Logic ----
+    const tokens = getRegisteredTokens(); // returns array of device tokens
+    if (tokens && tokens.length > 0) {
+      const booking = coach.bookings[bookingIndex];
+
+      const message = {
+        notification: {
+          title: 'Booking Status Updated',
+          body: `Your booking is now ${status}.`,
+        },
+        data: {
+          screen: 'booking',
+          bookingId: booking._id.toString(),
+          coachId: coach._id.toString(),
+          type: 'booking_status_update',
+        },
+      };
+
+      const notifications = tokens.map(async (token) => {
+        try {
+          return await admin.messaging().send({
+            ...message,
+            token,
+          });
+        } catch (error) {
+          console.error(`Failed to send notification to token ${token}:`, error);
+          return null;
+        }
+      });
+
+      const results = await Promise.allSettled(notifications);
+      const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
+      const failed = results.length - successful;
+      console.log(`Push Notifications: ${successful} sent, ${failed} failed`);
+    } else {
+      console.log('No registered tokens found for notifications');
+    }
+    // ---- End Push Notification Logic ----
+
     res.status(200).json({
       success: true,
       message: 'Booking status updated successfully',
       data: coach.bookings[bookingIndex],
     });
+
   } catch (error) {
+    console.error("Error updating booking status:", error);
     res.status(500).json({
       success: false,
       message: 'Error updating booking status',
