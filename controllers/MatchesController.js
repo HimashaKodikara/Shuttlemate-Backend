@@ -21,10 +21,10 @@ export const createMatch = async (req, res, next) => {
           body: `A new match has been scheduled: ${newMatch.title || newMatch.name || 'Check it out!'}`,
         },
         data: {
-          screen: 'match', // Custom screen identifier
-          matchId: newMatch._id.toString(), // Pass the match ID
+          screen: 'match', 
+          matchId: newMatch._id.toString(), 
           type: 'new_match',
-          // Add any other data you want to pass
+          
         },
       };
 
@@ -37,15 +37,12 @@ export const createMatch = async (req, res, next) => {
           });
         } catch (error) {
           console.error(`Failed to send notification to token ${token}:`, error);
-          // You might want to remove invalid tokens from your storage here
           return null;
         }
       });
 
-      // Wait for all notifications to be sent
       const results = await Promise.allSettled(notifications);
       
-      // Log results for debugging
       const successful = results.filter(result => result.status === 'fulfilled' && result.value).length;
       const failed = results.length - successful;
       

@@ -2,14 +2,14 @@ import mongoose from 'mongoose';
 
 const PaymentSchema = new mongoose.Schema({
   userId: {
-    type: String,
-    required: [true, 'User ID is required'],
-    trim: true
+    type:String,
+    ref: 'User', 
+    required: [true, 'User ID is required']
   },
   itemId: {
-    type: String,
-    required: [true, 'Item ID is required'],
-    trim: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Item', // The model name you want to reference
+    required: [true, 'Item ID is required']
   },
   amount: {
     type: Number,
@@ -31,8 +31,7 @@ const PaymentSchema = new mongoose.Schema({
     maxlength: [3, 'Currency code must be 3 characters'],
     default: 'USD'
   },
-  // Change this field name to match your database
-  PaymentID: {  // Changed from paymentIntentId to PaymentID
+  PaymentID: {
     type: String,
     required: [true, 'Payment Intent ID is required'],
     unique: true,
@@ -68,12 +67,12 @@ const PaymentSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Update indexes
+// Indexes
 PaymentSchema.index({ userId: 1, createdAt: -1 });
 PaymentSchema.index({ status: 1 });
 PaymentSchema.index({ createdAt: -1 });
 
-// Add virtual for backward compatibility if needed
+// Virtual for backward compatibility
 PaymentSchema.virtual('paymentIntentId').get(function() {
   return this.PaymentID;
 });

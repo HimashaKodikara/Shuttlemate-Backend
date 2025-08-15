@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+        enum: ["active", "inactive", "banned"],
+        default: "active", 
+    },
     role:{
         type:String,
         required : true,

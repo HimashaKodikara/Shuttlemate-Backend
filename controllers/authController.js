@@ -76,4 +76,52 @@ export const login = async (req, res) => {
       error: error.message,
     });
   }
+
+
 };
+
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, { password: 0 }); // exclude password
+    res.status(200).json({
+      success: true,
+      message: "Users retrieved successfully",
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error retrieving users",
+      error: error.message,
+    });
+  }
+};
+
+
+// Delete User Controller
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `User with ID ${id} deleted successfully`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error deleting user",
+      error: error.message,
+    });
+  }
+};
+

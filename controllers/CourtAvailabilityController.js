@@ -162,13 +162,11 @@ export const deleteAvailabilitySlot = async (req, res) => {
 };
 
 
-// Check if a coach is available at a specific time
 export const checkAvailability = async (req, res) => {
   try {
     const { courtId } = req.params;
     const { date, startTime, endTime } = req.body;
     
-    // Validate required fields
     if (!date || !startTime || !endTime) {
       return res.status(400).json({
         success: false,
