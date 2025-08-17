@@ -8,7 +8,7 @@ const PaymentSchema = new mongoose.Schema({
   },
   itemId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Item', // The model name you want to reference
+    ref: 'Item', 
     required: [true, 'Item ID is required']
   },
   amount: {

@@ -232,7 +232,7 @@ router.get('/payments', async (req, res) => {
   }
 });
 
-// Enhanced email sender with item name and user address
+//Email send function
 const sendPaymentSuccessEmail = async (user, payment, item) => {
   try {
    

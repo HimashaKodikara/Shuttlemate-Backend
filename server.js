@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import videoRoutes from "./routes/video.js";
@@ -16,9 +17,9 @@ import CourtBooking from './routes/CourtBooking.js'
 import authRoutes from './routes/authRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 import notificationRoutes from './routes/Notification.js';
-//import { errorHandler } from "./middlewares/error.js";
+import paymentRoutes from './routes/payment.js';
 
-dotenv.config();
+
 
 // Express App
 const app = express();
@@ -43,6 +44,7 @@ app.use("/api/courts",CourtBooking);
 app.use("/api/auth",authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/payment", paymentRoutes.default || paymentRoutes);
 
 
 app.listen(port, () => {
