@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import AutoIncrementFactory from "mongoose-sequence";
 
-const connection = mongoose.connection; // Get mongoose connection
+const connection = mongoose.connection; 
 const AutoIncrement = AutoIncrementFactory(connection);
 
 const AvailabilitySlotSchema = new mongoose.Schema({
@@ -31,11 +31,11 @@ const BookingSchema = new mongoose.Schema({
     required: true,
   },
   startTime: {
-    type: String, // Format: "HH:MM" (24-hour)
+    type: String, 
     required: true,
   },
   endTime: {
-    type: String, // Format: "HH:MM" (24-hour)
+    type: String, 
     required: true,
   },
   userId: {

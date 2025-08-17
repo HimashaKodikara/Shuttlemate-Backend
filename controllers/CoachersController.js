@@ -163,7 +163,7 @@ export const searchCoachers = async (req, res) => {
 
   try {
     const coachers = await Coachers.find({
-      CoachName: { $regex: search, $options: 'i' }, // case-insensitive
+      CoachName: { $regex: search, $options: 'i' }, 
     });
 
     res.status(200).json(coachers);

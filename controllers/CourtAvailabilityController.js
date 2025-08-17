@@ -189,23 +189,22 @@ export const checkAvailability = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Court not found' });
     }
     
-    // Get the day of week from the requested date
-    const requestDate = new Date(date);
-    const dayOfWeek = requestDate.getDay(); // 0 = Sunday, 6 = Saturday
     
-    // Check if coach has availability for that day
+    const requestDate = new Date(date);
+    const dayOfWeek = requestDate.getDay(); 
+    
+  
     const hasAvailability = court.availability.some(slot => {
       return slot.dayOfWeek === dayOfWeek && slot.startTime <= startTime && slot.endTime >= endTime;
     });
     
     // Check if there are any conflicting bookings
     const conflictingBookings = court.bookings.filter(booking => {
-      // Convert booking date to YYYY-MM-DD format for comparison
+    
       const bookingDate = new Date(booking.date);
       const bookingDateStr = bookingDate.toISOString().split('T')[0];
       const requestDateStr = requestDate.toISOString().split('T')[0];
       
-      // Check if booking is on the same day and has overlapping time
       return bookingDateStr === requestDateStr && 
         booking.status !== 'cancelled' &&
         ((booking.startTime <= startTime && booking.endTime > startTime) || 

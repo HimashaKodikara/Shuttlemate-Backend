@@ -22,16 +22,14 @@ export const getCourtBookings = async (req, res) => {
 
     let filteredBookings = court.bookings;
 
-    // Filter by status if provided
     if (status) {
       filteredBookings = filteredBookings.filter(booking => booking.status === status);
     }
 
-    // Filter by date range if provided
     if (startDate && endDate) {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999); // Include the entire end date
+      end.setHours(23, 59, 59, 999); 
 
       filteredBookings = filteredBookings.filter(booking => {
         const bookingDate = new Date(booking.date);
@@ -45,7 +43,7 @@ export const getCourtBookings = async (req, res) => {
       });
     } else if (endDate) {
       const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999); // Include the entire end date
+      end.setHours(23, 59, 59, 999); 
 
       filteredBookings = filteredBookings.filter(booking => {
         const bookingDate = new Date(booking.date);
@@ -112,7 +110,6 @@ export const createBooking = async (req, res) => {
     const { courtId } = req.params;
     const { date, startTime, endTime, userId, notes } = req.body;
 
-    // Validate required fields
     if (!date || !startTime || !endTime || !userId) {
       return res.status(400).json({
         success: false,
@@ -121,7 +118,7 @@ export const createBooking = async (req, res) => {
     }
 
 
-    // Check if end time is after start time
+  
     if (startTime >= endTime) {
       return res.status(400).json({
         success: false,
@@ -136,11 +133,9 @@ export const createBooking = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Court not found' });
     }
 
-    // Check court availability
     const bookingDate = new Date(date);
     const dayOfWeek = bookingDate.getDay();
 
-    // Check if court has availability for that day and time
     const hasAvailability = court.availability.some(slot => {
       return slot.dayOfWeek === dayOfWeek &&
         slot.startTime <= startTime &&
@@ -156,7 +151,6 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Check for conflicting bookings
     const conflictingBookings = court.bookings.filter(booking => {
       const existingBookingDate = new Date(booking.date);
       const existingDateStr = existingBookingDate.toISOString().split('T')[0];
@@ -179,7 +173,6 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Create new booking
     const newBooking = {
       date: bookingDate,
       startTime,
@@ -241,7 +234,6 @@ export const updateBookingStatus = async (req, res) => {
     const booking = court.bookings[bookingIndex];
     const previousStatus = booking.status;
 
-    // Update booking status
     court.bookings[bookingIndex].status = status;
 
     if ((status === 'completed' && previousStatus !== 'completed') || status === 'cancelled') {
@@ -318,7 +310,6 @@ export const updateBookingStatus = async (req, res) => {
   }
 };
 
-  // Update booking details
   export const updateBooking = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -344,7 +335,6 @@ export const updateBookingStatus = async (req, res) => {
 
       const currentBooking = court.bookings[bookingIndex];
 
-      // If the booking is already cancelled, don't allow updates
       if (currentBooking.status === 'cancelled') {
         await session.abortTransaction();
         session.endSession();
@@ -354,7 +344,6 @@ export const updateBookingStatus = async (req, res) => {
         });
       }
 
-      // Prepare the updated booking data
       const updatedBooking = { ...currentBooking.toObject() };
 
       if (date) updatedBooking.date = new Date(date);
@@ -365,7 +354,6 @@ export const updateBookingStatus = async (req, res) => {
 
 
 
-      // Check if end time is after start time
       const finalStartTime = startTime || currentBooking.startTime;
       const finalEndTime = endTime || currentBooking.endTime;
 
@@ -378,12 +366,10 @@ export const updateBookingStatus = async (req, res) => {
         });
       }
 
-      // If date or time is changed, check availability
       if (date || startTime || endTime) {
         const bookingDate = date ? new Date(date) : new Date(currentBooking.date);
         const dayOfWeek = bookingDate.getDay();
 
-        // Check if court has availability for that day and time
         const hasAvailability = court.availability.some(slot => {
           return slot.dayOfWeek === dayOfWeek &&
             slot.startTime <= finalStartTime &&
@@ -399,19 +385,15 @@ export const updateBookingStatus = async (req, res) => {
           });
         }
 
-        // Check for conflicting bookings
         const conflictingBookings = court.bookings.filter(booking => {
-          // Skip the current booking being updated
           if (booking._id.toString() === bookingId) {
             return false;
           }
 
-          // Convert booking date to YYYY-MM-DD format for comparison
           const existingBookingDate = new Date(booking.date);
           const existingDateStr = existingBookingDate.toISOString().split('T')[0];
           const newDateStr = bookingDate.toISOString().split('T')[0];
 
-          // Check if booking is on the same day and has overlapping time
           return existingDateStr === newDateStr &&
             booking.status !== 'cancelled' &&
             ((booking.startTime <= finalStartTime && booking.endTime > finalStartTime) ||
@@ -501,7 +483,7 @@ export const updateBookingStatus = async (req, res) => {
         booking.userId.toString() === userId
       );
 
-      // Filter by status if provided
+
       if (status) {
         userBookings = userBookings.filter(booking => booking.status === status);
       }

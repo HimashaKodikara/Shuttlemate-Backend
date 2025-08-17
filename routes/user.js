@@ -9,11 +9,11 @@ import {createUser,
 const router = express.Router();
 
 // http://localhost:5000/api/user/
-router.post('/', createUser);         // Create user
-router.get('/', getAllUsers);            // Get all users
-router.get('/:firebaseUid', getUserById);      // Get user by ID
-router.put('/:firebaseUid', updateUser);       // Update user
-router.delete('/:id', deleteUser);    // Delete user
+router.post('/', createUser);         
+router.get('/', getAllUsers);           
+router.get('/:firebaseUid', getUserById);      
+router.put('/:firebaseUid', updateUser);     
+router.delete('/:id', deleteUser);   
 
 
 

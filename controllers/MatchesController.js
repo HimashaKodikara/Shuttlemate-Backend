@@ -11,7 +11,6 @@ export const createMatch = async (req, res, next) => {
   try {
     const newMatch = await Matches.create(req.body);
     
-    // Send push notifications to all registered tokens
     const tokens = getRegisteredTokens();
     
     if (tokens && tokens.length > 0) {
@@ -28,7 +27,6 @@ export const createMatch = async (req, res, next) => {
         },
       };
 
-      // Send notifications to all tokens
       const notifications = tokens.map(async (token) => {
         try {
           return await admin.messaging().send({

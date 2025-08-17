@@ -18,7 +18,7 @@ const ItemSchema = new mongoose.Schema({
     type: String,
   },
   shopName: {
-    type: String, // Will be auto-filled
+    type: String, 
   },
   brand: {
     type: String,
@@ -37,7 +37,7 @@ const ItemSchema = new mongoose.Schema({
   },
 });
 
-// Define Category Schema
+
 const CategorySchema = new mongoose.Schema({
   categoryName: {
     type: String,
@@ -48,7 +48,7 @@ const CategorySchema = new mongoose.Schema({
   },
 });
 
-// Define Shop Schema
+
 const ShopSchema = new mongoose.Schema(
   {
     ShopPhoto: {
@@ -76,13 +76,12 @@ const ShopSchema = new mongoose.Schema(
         images: { type: String, required: true },
       },
     ],
-    categories: [CategorySchema], // Embedded categories
-    items: [ItemSchema], // Embedded items
+    categories: [CategorySchema], 
+    items: [ItemSchema], 
   },
   { timestamps: true }
 );
 
-// Pre-save middleware to auto-fill shopName in each item
 ShopSchema.pre("save", function (next) {
   const shop = this;
   if (shop.items && shop.ShopName) {

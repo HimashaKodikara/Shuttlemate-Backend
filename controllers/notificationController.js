@@ -1,7 +1,6 @@
 
 import admin from '../firebase/firebaseAdmin.js';
 
-// In-memory token store (use DB in production)
 const tokens = new Set();
 
 export const registerToken = (req, res) => {

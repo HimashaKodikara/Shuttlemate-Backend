@@ -67,12 +67,12 @@ const PaymentSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes
+
 PaymentSchema.index({ userId: 1, createdAt: -1 });
 PaymentSchema.index({ status: 1 });
 PaymentSchema.index({ createdAt: -1 });
 
-// Virtual for backward compatibility
+
 PaymentSchema.virtual('paymentIntentId').get(function() {
   return this.PaymentID;
 });
