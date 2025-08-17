@@ -21,6 +21,7 @@
     "mongoose": "^8.7.0",
     "mongoose-sequence": "^6.0.1",
     "mongose": "^0.0.2-security",
+    "nodemailer": "^7.0.5",
     "stripe": "^18.0.0"
   },
   "devDependencies": {
