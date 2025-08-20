@@ -232,6 +232,112 @@ router.get('/payments', async (req, res) => {
   }
 });
 
+
+
+// Update payment status (for admin use)
+router.put('/payment/:paymentId/status', async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+    const { status } = req.body;
+
+    if (!status || !['pending', 'succeeded', 'failed', 'canceled', 'refunded'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status provided' });
+    }
+
+    const payment = await Payment.findById(paymentId);
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+
+    payment.status = status;
+    await payment.save();
+
+    // Return enriched data
+    const enrichedPayment = await payment.getEnrichedData();
+
+    res.json({
+      success: true,
+      payment: enrichedPayment
+    });
+
+  } catch (err) {
+    console.error('Error updating payment status:', err);
+    res.status(500).json({ error: 'Failed to update payment status' });
+  }
+});
+
+// Delete payment (for admin use)
+router.delete('/payment/:paymentId', async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+
+    const payment = await Payment.findById(paymentId);
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+
+    await Payment.findByIdAndDelete(paymentId);
+
+    res.json({
+      success: true,
+      message: 'Payment deleted successfully'
+    });
+
+  } catch (err) {
+    console.error('Error deleting payment:', err);
+    res.status(500).json({ error: 'Failed to delete payment' });
+  }
+});
+
+// Get payment statistics
+router.get('/payments/stats/:userId?', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    let matchStage = {};
+    if (userId) {
+      matchStage = { userId };
+    }
+
+    const stats = await Payment.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+          totalAmount: { $sum: '$amount' }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          statusStats: {
+            $push: {
+              status: '$_id',
+              count: '$count',
+              totalAmount: '$totalAmount'
+            }
+          },
+          totalPayments: { $sum: '$count' },
+          totalRevenue: { $sum: '$totalAmount' }
+        }
+      }
+    ]);
+
+    const result = stats[0] || {
+      statusStats: [],
+      totalPayments: 0,
+      totalRevenue: 0
+    };
+
+    res.json(result);
+
+  } catch (err) {
+    console.error('Error fetching payment stats:', err);
+    res.status(500).json({ error: 'Failed to fetch payment statistics' });
+  }
+});
+
 //Email send function
 const sendPaymentSuccessEmail = async (user, payment, item) => {
   try {
