@@ -11,6 +11,13 @@ const PaymentSchema = new mongoose.Schema({
     ref: 'Item', 
     required: [true, 'Item ID is required']
   },
+quantity: {
+    type: Number,
+    required: [false, 'Quantity is required'],
+    min: [1, 'Quantity must be at least 1'],
+    default: 1
+  },
+  
   amount: {
     type: Number,
     required: [true, 'Amount is required'],
@@ -93,6 +100,23 @@ PaymentSchema.pre('save', function(next) {
   next();
 });
 
+// Static method to find payments by user with populated data
+PaymentSchema.statics.findByUserWithDetails = function(userId, options = {}) {
+  const { limit = 10, skip = 0, status } = options;
+  
+  let query = this.find({ userId });
+  
+  if (status) {
+    query = query.where({ status });
+  }
+  
+  return query
+    .populate('userId', 'name email firebaseUid phoneNumber address1 address2 postalCode')
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .skip(skip);
+};
+
 PaymentSchema.statics.findByUser = function(userId, options = {}) {
   const { limit = 10, skip = 0, status } = options;
   
@@ -121,6 +145,67 @@ PaymentSchema.statics.getUserStats = function(userId) {
   ]);
 };
 
+// Static method to get all payments with enriched data
+PaymentSchema.statics.findAllWithDetails = async function(options = {}) {
+  const { limit = 20, skip = 0, status } = options;
+  
+  let query = {};
+  if (status) {
+    query.status = status;
+  }
+
+  // Get payments first
+  const payments = await this.find(query)
+    .sort({ createdAt: -1 })
+    .limit(parseInt(limit))
+    .skip(parseInt(skip));
+
+  // Import models dynamically to avoid circular dependencies
+  const User = mongoose.model('User');
+  const Shop = mongoose.model('shops');
+
+  // Enrich payment data
+  const enrichedPayments = await Promise.all(
+    payments.map(async (payment) => {
+      try {
+        // Get user data
+        const user = await User.findOne({ firebaseUid: payment.userId }).select('name email firebaseUid phoneNumber address1 address2 postalCode');
+        
+        // Get item data from shop
+        const shop = await Shop.findOne(
+          { "items._id": payment.itemId },
+          { "items.$": 1, ShopName: 1 }
+        );
+        
+        const item = shop?.items?.[0];
+        
+        return {
+          ...payment.toObject(),
+          userName: user?.name || 'Unknown User',
+          userEmail: user?.email || '',
+          itemName: item?.name || 'Unknown Item',
+          itemPrice: item?.price || 0,
+          shopName: item?.shopName || shop?.ShopName || 'Unknown Shop',
+          itemPhoto: item?.itemphoto || ''
+        };
+      } catch (error) {
+        console.error(`Error enriching payment ${payment._id}:`, error);
+        return {
+          ...payment.toObject(),
+          userName: 'Error Loading',
+          userEmail: '',
+          itemName: 'Error Loading',
+          itemPrice: 0,
+          shopName: 'Unknown Shop',
+          itemPhoto: ''
+        };
+      }
+    })
+  );
+
+  return enrichedPayments;
+};
+
 PaymentSchema.methods.markAsFailed = function() {
   this.status = 'failed';
   this.updatedAt = new Date();
@@ -131,6 +216,46 @@ PaymentSchema.methods.markAsSucceeded = function() {
   this.status = 'succeeded';
   this.updatedAt = new Date();
   return this.save();
+};
+
+// Instance method to get enriched payment data
+PaymentSchema.methods.getEnrichedData = async function() {
+  const User = mongoose.model('User');
+  const Shop = mongoose.model('shops');
+
+  try {
+    // Get user data
+    const user = await User.findOne({ firebaseUid: this.userId }).select('name email firebaseUid phoneNumber address1 address2 postalCode');
+    
+    // Get item data from shop
+    const shop = await Shop.findOne(
+      { "items._id": this.itemId },
+      { "items.$": 1, ShopName: 1 }
+    );
+    
+    const item = shop?.items?.[0];
+    
+    return {
+      ...this.toObject(),
+      userName: user?.name || 'Unknown User',
+      userEmail: user?.email || '',
+      itemName: item?.name || 'Unknown Item',
+      itemPrice: item?.price || 0,
+      shopName: item?.shopName || shop?.ShopName || 'Unknown Shop',
+      itemPhoto: item?.itemphoto || ''
+    };
+  } catch (error) {
+    console.error(`Error enriching payment ${this._id}:`, error);
+    return {
+      ...this.toObject(),
+      userName: 'Error Loading',
+      userEmail: '',
+      itemName: 'Error Loading',
+      itemPrice: 0,
+      shopName: 'Unknown Shop',
+      itemPhoto: ''
+    };
+  }
 };
 
 const Payment = mongoose.model('Payment', PaymentSchema);
