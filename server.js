@@ -18,6 +18,7 @@ import authRoutes from './routes/authRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 import notificationRoutes from './routes/Notification.js';
 import paymentRoutes from './routes/payment.js';
+import NewsRoute from './routes/news.js';
 
 
 
@@ -45,6 +46,7 @@ app.use("/api/auth",authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/payment", paymentRoutes.default || paymentRoutes);
+app.use("/api/news", NewsRoute);
 
 
 app.listen(port, () => {

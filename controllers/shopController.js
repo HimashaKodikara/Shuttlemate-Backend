@@ -131,63 +131,6 @@ export const addCategoryToShop = async (req, res, next) => {
   }
 };
 
-// // Add an item to a category in a shop
-// export const addItemToCategory = async (req, res, next) => {
-//   try {
-//     const { name, price, color, itemphoto, categoryId } = req.body;
-//     const shop = await Shop.findById(req.params.id);
-//     if (!shop) return res.status(404).json({ success: false, message: "Shop not found" });
-
-//     const categoryExists = shop.categories.some(category => category._id.toString() === categoryId);
-//     if (!categoryExists) return res.status(404).json({ success: false, message: "Category not found" });
-
-//     const newItem = { name, price, color, itemphoto, categoryId };
-//     shop.items.push(newItem);
-//     await shop.save();
-//     res.status(201).json({ success: true, shop });
-//   } catch (error) {
-//     console.error("Error adding item:", error);
-//     res.status(500).json({ success: false, message: "Failed to add item" });
-//     next(error);
-//   }
-// };
-
-
-
-// export const addItemToCategory = async (req, res, next) => {
-//   try {
-//     const { name, price, color, itemphoto, categoryId } = req.body;
-
-//     // Find the shop
-//     const shop = await Shop.findById(req.params.id);
-//     if (!shop) {
-//       return res.status(404).json({ success: false, message: "Shop not found" });
-//     }
-
-//     // Convert categoryId to ObjectId if it's a string
-//     if (!mongoose.Types.ObjectId.isValid(categoryId)) {
-//       return res.status(400).json({ success: false, message: "Invalid category ID" });
-//     }
-//     const categoryObjectId = new mongoose.Types.ObjectId(categoryId);
-
-//     // Check if category exists in shop
-//     const categoryExists = shop.categories.some(category => category._id.equals(categoryObjectId));
-//     if (!categoryExists) {
-//       return res.status(404).json({ success: false, message: "Category not found" });
-//     }
-
-//     // Create and add new item
-//     const newItem = { name, price, color, itemphoto, categoryId };
-//     shop.items.push(newItem);
-//     await shop.save();
-
-//     res.status(201).json({ success: true, shop });
-//   } catch (error) {
-//     console.error("Error adding item:", error);
-//     res.status(500).json({ success: false, message: "Failed to add item" });
-//     next(error);
-//   }
-// };
 
 export const addItemToCategory = async (req, res, next) => {
   try {
@@ -218,7 +161,7 @@ export const addItemToCategory = async (req, res, next) => {
     };
 
     shop.items.push(newItem);
-    await shop.save(); // Automatically fills item.shopName
+    await shop.save(); 
 
     res.status(201).json({ success: true, shop });
   } catch (error) {

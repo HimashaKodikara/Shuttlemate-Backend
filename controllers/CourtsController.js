@@ -10,7 +10,7 @@ export const createcourt = async (req, res, next) => {
     const { CourtPhoto, CourtName, Tel, place, Directions, Priceperhour, Openinghours } = req.body;
    
     try {
-      // Validate required fields
+      
       if (!CourtName) {
         return res.status(400).json({
           success: false,
@@ -29,7 +29,6 @@ export const createcourt = async (req, res, next) => {
       });
 
 
-      // Send notifications
       try {
         const tokens = getRegisteredTokens();
 
@@ -46,7 +45,6 @@ export const createcourt = async (req, res, next) => {
             },
           };
 
-          // Send notifications to all tokens
           const notifications = tokens.map(async (token) => {
             try {
               const result = await admin.messaging().send({
@@ -79,7 +77,6 @@ export const createcourt = async (req, res, next) => {
     } catch (error) {
       console.error("Error creating court:", error);
       
-      // Check for specific MongoDB errors
       if (error.code === 11000) {
         return res.status(400).json({
           success: false,

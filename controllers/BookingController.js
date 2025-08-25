@@ -13,7 +13,7 @@ export const getCoachBookings = async (req, res) => {
     const coach = await Coach.findById(coachId)
       .populate({
         path: 'bookings.userId',
-        select: 'name email phoneNumber profilePhoto ' // Adjust based on your User model
+        select: 'name email phoneNumber profilePhoto ' 
       });
     
     if (!coach) {
@@ -22,16 +22,16 @@ export const getCoachBookings = async (req, res) => {
     
     let filteredBookings = coach.bookings;
     
-    // Filter by status if provided
+  
     if (status) {
       filteredBookings = filteredBookings.filter(booking => booking.status === status);
     }
     
-    // Filter by date range if provided
+    
     if (startDate && endDate) {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999); // Include the entire end date
+      end.setHours(23, 59, 59, 999); 
       
       filteredBookings = filteredBookings.filter(booking => {
         const bookingDate = new Date(booking.date);
@@ -45,7 +45,7 @@ export const getCoachBookings = async (req, res) => {
       });
     } else if (endDate) {
       const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999); // Include the entire end date
+      end.setHours(23, 59, 59, 999); 
       
       filteredBookings = filteredBookings.filter(booking => {
         const bookingDate = new Date(booking.date);
@@ -75,7 +75,7 @@ export const getBooking = async (req, res) => {
     const coach = await Coach.findById(coachId)
       .populate({
         path: 'bookings.userId',
-        select: 'name email phone profilePhoto' // Adjust based on your User model
+        select: 'name email phone profilePhoto' 
       });
     
     if (!coach) {
@@ -110,7 +110,7 @@ export const createBooking = async (req, res) => {
     const { coachId } = req.params;
     const { date, startTime, endTime, userId, courtId, notes } = req.body;
     
-    // Validate required fields
+    
     if (!date || !startTime || !endTime || !userId) {
       return res.status(400).json({
         success: false,
@@ -119,7 +119,7 @@ export const createBooking = async (req, res) => {
     }
     
    
-    // Check if end time is after start time
+    
     if (startTime >= endTime) {
       return res.status(400).json({
         success: false,
@@ -134,11 +134,11 @@ export const createBooking = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Coach not found' });
     }
     
-    // Check coach availability
+    
     const bookingDate = new Date(date);
     const dayOfWeek = bookingDate.getDay();
     
-    // Check if coach has availability for that day and time
+    
     const hasAvailability = coach.availability.some(slot => {
       return slot.dayOfWeek === dayOfWeek && 
              slot.startTime <= startTime && 
@@ -156,12 +156,12 @@ export const createBooking = async (req, res) => {
     
     // Check for conflicting bookings
     const conflictingBookings = coach.bookings.filter(booking => {
-      // Convert booking date to YYYY-MM-DD format for comparison
+  
       const existingBookingDate = new Date(booking.date);
       const existingDateStr = existingBookingDate.toISOString().split('T')[0];
       const newDateStr = bookingDate.toISOString().split('T')[0];
       
-      // Check if booking is on the same day and has overlapping time
+      
       return existingDateStr === newDateStr && 
         booking.status !== 'cancelled' &&
         ((booking.startTime <= startTime && booking.endTime > startTime) || 
@@ -179,7 +179,7 @@ export const createBooking = async (req, res) => {
       });
     }
     
-    // Create new booking
+    
     const newBooking = {
       date: bookingDate,
       startTime,
@@ -238,12 +238,12 @@ export const updateBookingStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
 
-    // Update booking status
+    
     coach.bookings[bookingIndex].status = status;
     await coach.save();
 
-    // ---- Push Notification Logic ----
-    const tokens = getRegisteredTokens(); // returns array of device tokens
+    
+    const tokens = getRegisteredTokens(); 
     if (tokens && tokens.length > 0) {
       const booking = coach.bookings[bookingIndex];
 
@@ -279,7 +279,7 @@ export const updateBookingStatus = async (req, res) => {
     } else {
       console.log('No registered tokens found for notifications');
     }
-    // ---- End Push Notification Logic ----
+    
 
     res.status(200).json({
       success: true,
@@ -323,7 +323,7 @@ export const updateBooking = async (req, res) => {
     
     const currentBooking = coach.bookings[bookingIndex];
     
-    // If the booking is already cancelled, don't allow updates
+  
     if (currentBooking.status === 'cancelled') {
       await session.abortTransaction();
       session.endSession();
@@ -333,7 +333,7 @@ export const updateBooking = async (req, res) => {
       });
     }
     
-    // Prepare the updated booking data
+    
     const updatedBooking = { ...currentBooking.toObject() };
     
     if (date) updatedBooking.date = new Date(date);
@@ -344,7 +344,7 @@ export const updateBooking = async (req, res) => {
     
    
     
-    // Check if end time is after start time
+    
     const finalStartTime = startTime || currentBooking.startTime;
     const finalEndTime = endTime || currentBooking.endTime;
     

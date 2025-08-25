@@ -31,11 +31,11 @@ const BookingCourtSchema = new mongoose.Schema({
       required: true,
     },
     startTime: {
-      type: String, // Format: "HH:MM" (24-hour)
+      type: String, 
       required: true,
     },
     endTime: {
-      type: String, // Format: "HH:MM" (24-hour)
+      type: String, 
       required: true,
     },
     userId: {
@@ -97,7 +97,7 @@ const CourtsSchema = new mongoose.Schema(
     availability: [CourtAvailabilitySchema],
     bookings: [BookingCourtSchema],
   },
-  { timestamps: true, } // Disable default MongoDB _id
+  { timestamps: true, } 
 );
 
 
