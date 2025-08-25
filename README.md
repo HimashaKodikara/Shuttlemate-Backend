@@ -7,27 +7,25 @@ A comprehensive backend API service for managing shuttle transportation systems.
 - **User Management**: User registration, authentication, and profile management
 - **Shuttle Management**: Create and manage shuttle routes, schedules, and capacity
 - **Booking System**: Allow users to book seats on available shuttles
-- **Real-time Tracking**: Live location tracking of shuttles
 - **Payment Integration**: Secure payment processing for bookings
 - **Admin Dashboard**: Administrative tools for managing the entire system
 - **Notifications**: Real-time notifications for booking confirmations, delays, etc.
 
 ## Tech Stack
 
-- **Runtime**: Node.js / Python / Java (adjust based on actual implementation)
-- **Framework**: Express.js / FastAPI / Spring Boot
-- **Database**: MongoDB / PostgreSQL / MySQL
+- **Runtime**: Node.js
+- **Framework**: Express.js / FastAPI 
+- **Database**: MongoDB  / MySQL
 - **Authentication**: JWT tokens
-- **Real-time Communication**: Socket.io / WebSockets
-- **Payment Processing**: Stripe / PayPal integration
+- **Payment Processing**: Stripe 
 - **Documentation**: Swagger/OpenAPI
 
 ## Prerequisites
 
 Before running this application, make sure you have the following installed:
 
-- Node.js (v16 or higher) / Python (v3.8+) / Java (v11+)
-- Database (MongoDB/PostgreSQL/MySQL)
+- Node.js (v16 or higher) 
+- Database (MongoDB/MySQL)
 - npm/yarn or pip or Maven/Gradle
 - Git
 
@@ -52,7 +50,7 @@ Before running this application, make sure you have the following installed:
    Create a `.env` file in the root directory with the following variables:
    ```env
    # Server Configuration
-   PORT=3000
+   PORT=5000
    NODE_ENV=development
 
    # Database Configuration
