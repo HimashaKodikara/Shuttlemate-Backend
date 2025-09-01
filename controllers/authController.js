@@ -82,7 +82,7 @@ export const login = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find({}, { password: 0 }); // exclude password
+    const users = await User.find({}, { password: 0 });
     res.status(200).json({
       success: true,
       message: "Users retrieved successfully",

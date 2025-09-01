@@ -4,7 +4,7 @@ import { getAllItems, getItemsByShopId,getAllItemsByCategoryId,getItemById } fro
 const router = express.Router();
 
 //http://localhost:5000/api/items/
-router.get("/", getAllItems); // Get all items from all shops
+router.get("/", getAllItems); 
 
 
 //http://localhost:5000/api/items/shop/67bb5c19df773fdb10ffa92d

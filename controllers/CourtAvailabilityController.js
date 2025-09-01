@@ -97,13 +97,11 @@ export const updateAvailabilitySlot = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Availability slot not found' });
     }
     
-    // Update the slot with new values, keeping old values if new ones aren't provided
     if (dayOfWeek !== undefined) court.availability[slotIndex].dayOfWeek = dayOfWeek;
     if (startTime !== undefined) court.availability[slotIndex].startTime = startTime;
     if (endTime !== undefined) court.availability[slotIndex].endTime = endTime;
     if (isRecurring !== undefined) court.availability[slotIndex].isRecurring = isRecurring;
     
-    // Check if end time is after start time after the update
     if (court.availability[slotIndex].startTime >= court.availability[slotIndex].endTime) {
       return res.status(400).json({
         success: false,
@@ -176,7 +174,6 @@ export const checkAvailability = async (req, res) => {
     
     
     
-    // Check if end time is after start time
     if (startTime >= endTime) {
       return res.status(400).json({
         success: false,
@@ -198,7 +195,6 @@ export const checkAvailability = async (req, res) => {
       return slot.dayOfWeek === dayOfWeek && slot.startTime <= startTime && slot.endTime >= endTime;
     });
     
-    // Check if there are any conflicting bookings
     const conflictingBookings = court.bookings.filter(booking => {
     
       const bookingDate = new Date(booking.date);
