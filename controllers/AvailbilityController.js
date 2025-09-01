@@ -101,13 +101,11 @@ export const updateAvailabilitySlot = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Availability slot not found' });
     }
     
-    // Update the slot with new values, keeping old values if new ones aren't provided
     if (dayOfWeek !== undefined) coach.availability[slotIndex].dayOfWeek = dayOfWeek;
     if (startTime !== undefined) coach.availability[slotIndex].startTime = startTime;
     if (endTime !== undefined) coach.availability[slotIndex].endTime = endTime;
     if (isRecurring !== undefined) coach.availability[slotIndex].isRecurring = isRecurring;
     
-    // Check if end time is after start time after the update
     if (coach.availability[slotIndex].startTime >= coach.availability[slotIndex].endTime) {
       return res.status(400).json({
         success: false,
@@ -169,7 +167,7 @@ export const checkAvailability = async (req, res) => {
     const { coachId } = req.params;
     const { date, startTime, endTime } = req.body;
     
-    // Validate required fields
+  
     if (!date || !startTime || !endTime) {
       return res.status(400).json({
         success: false,
@@ -178,8 +176,6 @@ export const checkAvailability = async (req, res) => {
     }
     
     
-    
-    // Check if end time is after start time
     if (startTime >= endTime) {
       return res.status(400).json({
         success: false,
@@ -192,23 +188,23 @@ export const checkAvailability = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Coach not found' });
     }
     
-    // Get the day of week from the requested date
-    const requestDate = new Date(date);
-    const dayOfWeek = requestDate.getDay(); // 0 = Sunday, 6 = Saturday
     
-    // Check if coach has availability for that day
+    const requestDate = new Date(date);
+    const dayOfWeek = requestDate.getDay(); 
+    
+    
     const hasAvailability = coach.availability.some(slot => {
       return slot.dayOfWeek === dayOfWeek && slot.startTime <= startTime && slot.endTime >= endTime;
     });
     
-    // Check if there are any conflicting bookings
+    
     const conflictingBookings = coach.bookings.filter(booking => {
-      // Convert booking date to YYYY-MM-DD format for comparison
+      
       const bookingDate = new Date(booking.date);
       const bookingDateStr = bookingDate.toISOString().split('T')[0];
       const requestDateStr = requestDate.toISOString().split('T')[0];
       
-      // Check if booking is on the same day and has overlapping time
+      
       return bookingDateStr === requestDateStr && 
         booking.status !== 'cancelled' &&
         ((booking.startTime <= startTime && booking.endTime > startTime) || 

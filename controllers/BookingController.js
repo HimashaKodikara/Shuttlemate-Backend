@@ -362,7 +362,6 @@ export const updateBooking = async (req, res) => {
       const bookingDate = date ? new Date(date) : new Date(currentBooking.date);
       const dayOfWeek = bookingDate.getDay();
       
-      // Check if coach has availability for that day and time
       const hasAvailability = coach.availability.some(slot => {
         return slot.dayOfWeek === dayOfWeek && 
                slot.startTime <= finalStartTime && 
@@ -378,19 +377,15 @@ export const updateBooking = async (req, res) => {
         });
       }
       
-      // Check for conflicting bookings
       const conflictingBookings = coach.bookings.filter(booking => {
-        // Skip the current booking being updated
         if (booking._id.toString() === bookingId) {
           return false;
         }
         
-        // Convert booking date to YYYY-MM-DD format for comparison
         const existingBookingDate = new Date(booking.date);
         const existingDateStr = existingBookingDate.toISOString().split('T')[0];
         const newDateStr = bookingDate.toISOString().split('T')[0];
         
-        // Check if booking is on the same day and has overlapping time
         return existingDateStr === newDateStr && 
           booking.status !== 'cancelled' &&
           ((booking.startTime <= finalStartTime && booking.endTime > finalStartTime) || 
@@ -480,7 +475,6 @@ export const getUserBookingsWithCoach = async (req, res) => {
       booking.userId.toString() === userId
     );
     
-    // Filter by status if provided
     if (status) {
       userBookings = userBookings.filter(booking => booking.status === status);
     }

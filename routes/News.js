@@ -9,10 +9,10 @@ import {
 
 const router = express.Router();
 
-router.post("/", createNews);      // Create news
-router.get("/", getAllNews);       // Get all news
-router.get("/:id", getNewsById);   // Get single news
-router.put("/:id", updateNews);    // Update news
-router.delete("/:id", deleteNews); // Delete news
+router.post("/", createNews);      
+router.get("/", getAllNews);      
+router.get("/:id", getNewsById);   
+router.put("/:id", updateNews);    
+router.delete("/:id", deleteNews); 
 
 export default router;
