@@ -16,9 +16,11 @@ export const registerToken = (req, res) => {
 
 export const getRegisteredTokens = () => [...tokens];
 
+// Sends a notification to a specific device token using Firebase Cloud Messaging
 export const sendNotification = async (req, res) => {
   const { token, title, body } = req.body;
 
+  // Validate required fields
   if (!token || !title || !body) {
     return res.status(400).json({
       success: false,
@@ -35,6 +37,7 @@ export const sendNotification = async (req, res) => {
   };
 
   try {
+    // Send the notification using Firebase Admin SDK
     const response = await admin.messaging().send(message);
     return res.status(200).json({
       success: true,

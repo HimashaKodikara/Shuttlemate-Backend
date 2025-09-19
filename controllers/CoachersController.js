@@ -4,10 +4,14 @@ import Coachers from '../models/Coach.js';
 import { getRegisteredTokens } from "./notificationController.js";
 import admin from '../firebase/firebaseAdmin.js';
 
+/**
+ * Creates a new coach and sends a notification to all registered users.
+ */
 export const createcoach = async (req, res, next) => {
   const { CoachPhoto, CoachName, Tel, TrainingType, Certifications, Courts, Experiance, hourlyRate } = req.body;
 
   try {
+    // Create a new coach document in the database
     const coach = await Coachers.create({
       CoachPhoto,
       CoachName,
@@ -20,9 +24,11 @@ export const createcoach = async (req, res, next) => {
     });
 
     try {
+      // Fetch all registered notification tokens
       const tokens = await getRegisteredTokens();
 
       if (tokens && tokens.length > 0) {
+        // Prepare the notification message
         const message = {
           notification: {
             title: 'New Coach Added!',
@@ -158,6 +164,10 @@ export const deleteCoach = async (req, res, next) => {
   }
 };
 
+/**
+ * Searches for coachers based on a search query provided in the request.
+ *
+ */
 export const searchCoachers = async (req, res) => {
   const { search } = req.query;
 

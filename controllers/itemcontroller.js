@@ -49,7 +49,7 @@ export const getAllItems = async (req, res) => {
 };
 
 
-
+// Fetch all items for a specific shop, grouped by category
 export const getItemsByShopId = async (req, res) => {
   try {
     const shop = await Shop.findById(req.params.shopId);
@@ -99,6 +99,7 @@ export const getItemsByShopId = async (req, res) => {
 };
 
 
+// Fetch all items across all shops for a specific category ID
 export const getAllItemsByCategoryId = async (req, res) => {
   try {
     const { categoryId } = req.params;

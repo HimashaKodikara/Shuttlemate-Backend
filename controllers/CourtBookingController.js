@@ -208,11 +208,15 @@ export const createBooking = async (req, res) => {
 
 
 
+// Update the status of a booking (e.g., pending, confirmed, cancelled, completed)
+// Also removes the corresponding availability slot if completed/cancelled
+// Sends push notification to registered tokens about the status update
 export const updateBookingStatus = async (req, res) => {
   try {
     const { courtId, bookingId } = req.params;
     const { status } = req.body;
 
+    // Validate status
     const validStatuses = ['pending', 'confirmed', 'cancelled', 'completed'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -221,6 +225,7 @@ export const updateBookingStatus = async (req, res) => {
       });
     }
 
+    // Find court and booking
     const court = await Court.findById(courtId);
     if (!court) {
       return res.status(404).json({ success: false, message: 'Court not found' });
@@ -234,8 +239,10 @@ export const updateBookingStatus = async (req, res) => {
     const booking = court.bookings[bookingIndex];
     const previousStatus = booking.status;
 
+    // Update booking status
     court.bookings[bookingIndex].status = status;
 
+    // Remove availability slot if booking is completed or cancelled
     if ((status === 'completed' && previousStatus !== 'completed') || status === 'cancelled') {
       const bookingDate = new Date(booking.date);
       const dayOfWeek = bookingDate.getDay();
@@ -255,7 +262,7 @@ export const updateBookingStatus = async (req, res) => {
 
     await court.save();
 
-   
+    // Send push notification to registered tokens
     const tokens = getRegisteredTokens();
     if (tokens && tokens.length > 0) {
       const message = {
@@ -290,7 +297,6 @@ export const updateBookingStatus = async (req, res) => {
     } else {
       console.log('No registered tokens found for notifications');
     }
-  
 
     res.status(200).json({
       success: true,
@@ -310,6 +316,8 @@ export const updateBookingStatus = async (req, res) => {
   }
 };
 
+  // Update an existing booking (date, time, notes)
+  // Checks for court availability and booking conflicts before updating
   export const updateBooking = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -318,6 +326,7 @@ export const updateBookingStatus = async (req, res) => {
       const { courtId, bookingId } = req.params;
       const { date, startTime, endTime, notes } = req.body;
 
+      // Find the court by ID
       const court = await Court.findById(courtId).session(session);
       if (!court) {
         await session.abortTransaction();
@@ -325,6 +334,7 @@ export const updateBookingStatus = async (req, res) => {
         return res.status(404).json({ success: false, message: 'court not found' });
       }
 
+      // Find the booking to update
       const bookingIndex = court.bookings.findIndex(b => b._id.toString() === bookingId);
 
       if (bookingIndex === -1) {
@@ -335,6 +345,7 @@ export const updateBookingStatus = async (req, res) => {
 
       const currentBooking = court.bookings[bookingIndex];
 
+      // Prevent updating a cancelled booking
       if (currentBooking.status === 'cancelled') {
         await session.abortTransaction();
         session.endSession();
@@ -344,6 +355,7 @@ export const updateBookingStatus = async (req, res) => {
         });
       }
 
+      // Prepare updated booking object
       const updatedBooking = { ...currentBooking.toObject() };
 
       if (date) updatedBooking.date = new Date(date);
@@ -352,8 +364,7 @@ export const updateBookingStatus = async (req, res) => {
       if (courtId) updatedBooking.courtId = courtId;
       if (notes !== undefined) updatedBooking.notes = notes;
 
-
-
+      // Validate time range
       const finalStartTime = startTime || currentBooking.startTime;
       const finalEndTime = endTime || currentBooking.endTime;
 
@@ -366,10 +377,12 @@ export const updateBookingStatus = async (req, res) => {
         });
       }
 
+      // If date or time is changed, check for availability and conflicts
       if (date || startTime || endTime) {
         const bookingDate = date ? new Date(date) : new Date(currentBooking.date);
         const dayOfWeek = bookingDate.getDay();
 
+        // Check if court is available at the new time
         const hasAvailability = court.availability.some(slot => {
           return slot.dayOfWeek === dayOfWeek &&
             slot.startTime <= finalStartTime &&
@@ -385,6 +398,7 @@ export const updateBookingStatus = async (req, res) => {
           });
         }
 
+        // Check for conflicting bookings
         const conflictingBookings = court.bookings.filter(booking => {
           if (booking._id.toString() === bookingId) {
             return false;
@@ -412,7 +426,7 @@ export const updateBookingStatus = async (req, res) => {
         }
       }
 
-      // Update the booking
+      // Update the booking in the court document
       Object.assign(court.bookings[bookingIndex], updatedBooking);
       await court.save({ session });
 

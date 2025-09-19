@@ -160,11 +160,13 @@ export const deleteAvailabilitySlot = async (req, res) => {
 };
 
 
+// Check if a court is available for a given date and time slot
 export const checkAvailability = async (req, res) => {
   try {
     const { courtId } = req.params;
     const { date, startTime, endTime } = req.body;
     
+    // Validate required fields
     if (!date || !startTime || !endTime) {
       return res.status(400).json({
         success: false,
@@ -172,8 +174,7 @@ export const checkAvailability = async (req, res) => {
       });
     }
     
-    
-    
+    // Ensure end time is after start time
     if (startTime >= endTime) {
       return res.status(400).json({
         success: false,
@@ -181,22 +182,23 @@ export const checkAvailability = async (req, res) => {
       });
     }
     
+    // Find the court by ID
     const court = await Court.findById(courtId);
     if (!court) {
       return res.status(404).json({ success: false, message: 'Court not found' });
     }
     
-    
+    // Get the day of the week for the requested date
     const requestDate = new Date(date);
     const dayOfWeek = requestDate.getDay(); 
     
-  
+    // Check if the requested slot falls within any available slot for that day
     const hasAvailability = court.availability.some(slot => {
       return slot.dayOfWeek === dayOfWeek && slot.startTime <= startTime && slot.endTime >= endTime;
     });
     
+    // Check for conflicting bookings on the same date and time
     const conflictingBookings = court.bookings.filter(booking => {
-    
       const bookingDate = new Date(booking.date);
       const bookingDateStr = bookingDate.toISOString().split('T')[0];
       const requestDateStr = requestDate.toISOString().split('T')[0];
@@ -208,6 +210,7 @@ export const checkAvailability = async (req, res) => {
          (booking.startTime >= startTime && booking.endTime <= endTime));
     });
     
+    // Court is available if there is an available slot and no conflicting bookings
     const isAvailable = hasAvailability && conflictingBookings.length === 0;
     
     res.status(200).json({

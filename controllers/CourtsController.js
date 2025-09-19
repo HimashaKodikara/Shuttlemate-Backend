@@ -5,6 +5,11 @@ import admin from '../firebase/firebaseAdmin.js';
 
 
 
+/**
+ * Creates a new court and sends notifications to registered users.
+ *
+ * Handles duplicate and validation errors, and returns appropriate HTTP responses.
+ */
 export const createcourt = async (req, res, next) => {
     
     const { CourtPhoto, CourtName, Tel, place, Directions, Priceperhour, Openinghours } = req.body;
@@ -103,51 +108,56 @@ export const createcourt = async (req, res, next) => {
 };
   
 
+  // Get all courts
   export const getCourts = async (req, res, next) => {
     try {
       const courts = await Courts.find();
 
-  
-    
+      // Format each court document if needed
       const formattedCoache = courts.map(court => ({
         ...court._doc, 
-        
       }));
-  
+
       res.status(200).json({
         success: true,
         courts: formattedCoache,
       });
     } catch (error) {
-      console.error("Error fetching videos:", error);
-      res.status(500).json({ success: false, message: "Failed to fetch videos" });
+      console.error("Error fetching courts:", error);
+      res.status(500).json({ success: false, message: "Failed to fetch courts" });
       next(error);
     }
   };
 
 
 
+  // Delete a court by ID
   export const deleteCourt = async (req, res, next) => {
     const { id } = req.params;
 
+    // Validate the provided court ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ success: false, message: "Invalid Court ID" });
+      return res.status(400).json({ success: false, message: "Invalid Court ID" });
     }
 
     try {
-        const deletedCourt = await Courts.findByIdAndDelete(id);
-        if (!deletedCourt) {
-            return res.status(404).json({ success: false, message: "Court not found" });
-        }
+      // Attempt to find and delete the court
+      const deletedCourt = await Courts.findByIdAndDelete(id);
+      if (!deletedCourt) {
+        // Court not found
+        return res.status(404).json({ success: false, message: "Court not found" });
+      }
 
-        res.status(200).json({ success: true, message: "Court deleted successfully" });
+      // Court deleted successfully
+      res.status(200).json({ success: true, message: "Court deleted successfully" });
 
     } catch (error) {
-        console.error("Error deleting court:", error);
-        res.status(500).json({ success: false, message: "Failed to delete court" });
-        next(error);
+      // Handle errors during deletion
+      console.error("Error deleting court:", error);
+      res.status(500).json({ success: false, message: "Failed to delete court" });
+      next(error);
     }
-};
+  };
 
 // export const UpdateCourt = async (req, res, next) =>{
 //   const{id} = req.params;

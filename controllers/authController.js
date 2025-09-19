@@ -80,6 +80,7 @@ export const login = async (req, res) => {
 
 };
 
+// Get All Users Controller
 export const getUsers = async (req, res) => {
   try {
     const users = await User.find({}, { password: 0 });
